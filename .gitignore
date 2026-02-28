@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub-cache/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-versions
+.idea/
+*.iml
+
+# Android/iOS
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/local.properties
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Pods/
+ios/Runner.xcworkspace/
+ios/build/
+
+# macOS/Linux/Windows
+macos/Flutter/ephemeral/
+macos/build/
+linux/build/
+windows/build/
+
+# Others
+.DS_Store
+*.log
+*.swp
+*.swo
+
+# Node
+node_modules/
