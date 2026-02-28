@@ -1,21 +1,19 @@
 """User model for authentication."""
 from datetime import datetime
-from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
-    email: EmailStr
+    name: str
 
 
 class UserCreate(UserBase):
     password: str
-    family_code: Optional[str] = None  # None = create new family; set = join existing
 
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    name: str
     password: str
 
 

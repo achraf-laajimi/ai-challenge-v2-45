@@ -3,7 +3,6 @@ import 'person.dart';
 /// Represents a family unit with father, mother, children and history.
 class Family {
   final String? id;
-  final String? familyCode;
   final Person? father;
   final Person? mother;
   final List<Person> children;
@@ -11,7 +10,6 @@ class Family {
 
   const Family({
     this.id,
-    this.familyCode,
     required this.father,
     required this.mother,
     this.children = const [],
@@ -27,7 +25,7 @@ class Family {
     return list;
   }
 
-  /// From API JSON (camelCase: familyCode, familyHistory, createdAt).
+  /// From API JSON (camelCase: familyHistory, createdAt).
   factory Family.fromJson(Map<String, dynamic> json) {
     Person? parsePerson(dynamic v) {
       if (v == null || v is! Map<String, dynamic>) return null;
@@ -42,7 +40,6 @@ class Family {
 
     return Family(
       id: json['id'] as String?,
-      familyCode: json['familyCode'] as String?,
       father: f,
       mother: m,
       children: ch,

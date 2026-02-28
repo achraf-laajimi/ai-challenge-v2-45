@@ -1,6 +1,6 @@
 from app.models.user import User, UserInDB
 from app.models.person import Person, PersonCreate, PersonUpdate, PersonInDB, PersonRole
-from app.models.family import Family, FamilyCreate, FamilyUpdate, FamilyResponse
+from app.models.family import FamilyCreate, FamilyUpdate, FamilyResponse
 
 __all__ = [
     "User",

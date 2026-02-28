@@ -30,7 +30,6 @@ class FamilyResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True, serialize_by_alias=True)
 
     id: str
-    family_code: str = Field(alias="familyCode")
     family_history: List[str] = Field(default_factory=list, alias="familyHistory")
     father: Optional[Person] = None
     mother: Optional[Person] = None

@@ -15,9 +15,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage>
     with TickerProviderStateMixin {
-  final _emailController = TextEditingController();
+  final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _familyCodeController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -38,21 +37,19 @@ class _RegisterPageState extends State<RegisterPage>
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _nameController.dispose();
     _passwordController.dispose();
-    _familyCodeController.dispose();
     _gradientController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    final email = _emailController.text.trim();
+    final name = _nameController.text.trim();
     final password = _passwordController.text.trim();
-    final code = _familyCodeController.text.trim();
-    if (email.isEmpty || password.isEmpty) {
+    if (name.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Email et mot de passe requis.'),
+          content: Text('Nom et mot de passe requis.'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -60,9 +57,8 @@ class _RegisterPageState extends State<RegisterPage>
     }
     setState(() => _isLoading = true);
     final error = await AuthService.instance.register(
-      email: email,
+      name: name,
       password: password,
-      familyCode: code,
     );
     if (!mounted) return;
     setState(() => _isLoading = false);
@@ -168,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage>
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Rejoignez votre famille avec un code',
+                        'Créez votre compte et votre famille',
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           color: AppColors.textSecondary,
@@ -176,10 +172,10 @@ class _RegisterPageState extends State<RegisterPage>
                       ),
                       const SizedBox(height: 28),
                       _input(
-                        controller: _emailController,
-                        label: 'Email',
-                        hint: 'votre@email.com',
-                        icon: Icons.email,
+                        controller: _nameController,
+                        label: 'Nom',
+                        hint: 'Votre nom',
+                        icon: Icons.person,
                       ),
                       const SizedBox(height: 16),
                       _input(
@@ -193,13 +189,6 @@ class _RegisterPageState extends State<RegisterPage>
                         suffixIcon: _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
-                      ),
-                      const SizedBox(height: 16),
-                      _input(
-                        controller: _familyCodeController,
-                        label: 'Code famille',
-                        hint: 'Ex: FAM-XXXX (fourni par le créateur)',
-                        icon: Icons.vpn_key,
                       ),
                       const SizedBox(height: 28),
                       Container(

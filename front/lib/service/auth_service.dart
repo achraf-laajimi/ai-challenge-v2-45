@@ -14,13 +14,11 @@ class AuthService {
 
   final ApiClient _api = ApiClient.instance;
 
-  /// Returns saved access token or null.
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keyToken);
   }
 
-  /// Save token and user info after login/register.
   Future<void> _saveSession({
     required String token,
     required String userId,
@@ -33,7 +31,6 @@ class AuthService {
     _api.setToken(token);
   }
 
-  /// Clear session (logout).
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyToken);
@@ -42,7 +39,6 @@ class AuthService {
     _api.setToken(null);
   }
 
-  /// Restore token from storage (call on app start).
   Future<bool> restoreSession() async {
     final token = await getToken();
     if (token == null || token.isEmpty) return false;
@@ -50,13 +46,13 @@ class AuthService {
     return true;
   }
 
-  /// Login with email and password. Returns error message or null on success.
+  /// Login with name and password. Returns error message or null on success.
   Future<String?> login({
-    required String email,
+    required String name,
     required String password,
   }) async {
     final res = await _api.post('/auth/login', body: {
-      'email': email,
+      'name': name,
       'password': password,
     });
     if (res.statusCode != 200) {
@@ -73,19 +69,15 @@ class AuthService {
     return null;
   }
 
-  /// Register. If [familyCode] is empty, creates a new family; otherwise joins existing.
+  /// Register: creates new user and new family.
   Future<String?> register({
-    required String email,
+    required String name,
     required String password,
-    String familyCode = '',
   }) async {
-    final body = <String, dynamic>{
-      'email': email,
+    final res = await _api.post('/auth/register', body: {
+      'name': name,
       'password': password,
-    };
-    if (familyCode.isNotEmpty) body['family_code'] = familyCode;
-
-    final res = await _api.post('/auth/register', body: body);
+    });
     if (res.statusCode != 200) {
       final data = jsonDecode(res.body) as Map<String, dynamic>?;
       return data?['detail']?.toString() ?? 'Registration failed';

@@ -47,7 +47,6 @@ async def get_my_family(
 
     return FamilyResponse(
         id=str(fam["_id"]),
-        familyCode=fam.get("family_code", ""),
         familyHistory=fam.get("family_history", []),
         father=father,
         mother=mother,
@@ -91,7 +90,6 @@ async def update_my_family(
 
     return FamilyResponse(
         id=str(fam["_id"]),
-        familyCode=fam.get("family_code", ""),
         familyHistory=fam.get("family_history", []),
         father=father,
         mother=mother,
