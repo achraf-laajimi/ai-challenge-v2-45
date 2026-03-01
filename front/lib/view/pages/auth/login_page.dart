@@ -55,18 +55,30 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       return;
     }
     setState(() => _isLoading = true);
-    final error = await AuthService.instance.login(name: name, password: password);
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-    if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error), behavior: SnackBarBehavior.floating),
+    try {
+      final error = await AuthService.instance.login(name: name, password: password);
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), behavior: SnackBarBehavior.floating),
+        );
+        return;
+      }
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainNavPage()),
       );
-      return;
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur de connexion : vérifiez que le serveur est démarré.'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
     }
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainNavPage()),
-    );
   }
 
   @override

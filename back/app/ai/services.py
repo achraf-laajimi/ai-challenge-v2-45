@@ -1,68 +1,48 @@
+import base64
 import json
 import httpx
 from typing import List, Optional
+from google import genai
+from google.genai import types as genai_types
 from app.config import settings
 from app.models.person import Person
 from .schemas import Location, Place, NutritionSuggestion, ImageAnalysisResult
 from .prompts import SYSTEM_MEDICAL_PERSONA, DOCTOR_SPECIALTY_PROMPT, NUTRITION_REASONING_PROMPT, VLM_MEAL_ANALYSIS_PROMPT
 
-import base64
-from typing import List, Optional
-import google.generativeai as genai
-
-# Assurez-vous d'avoir ajouté gemini_api_key dans votre fichier config.py
-from app.config import settings 
-
-# 1. Configuration initiale de Gemini avec votre clé API
-genai.configure(api_key=settings.gemini_api_key)
+_gemini_client = genai.Client(api_key=settings.gemini_api_key)
+_MODEL = "gemini-2.5-flash"
 
 async def _call_llm(system_prompt: str, user_prompt: str, image_b64: Optional[str] = None) -> str:
     """
-    Appel asynchrone à l'API Google Gemini (1.5 Flash pour un bon ratio vitesse/vision).
+    Appel asynchrone à l'API Google Gemini via le nouveau SDK google-genai.
     Gère les requêtes textuelles et multimodales (vision).
     """
     try:
-        # 2. Initialisation du modèle. 
-        # On utilise 'gemini-1.5-flash' car il est rapide et gère très bien la vision. 
-        # Pour des raisonnements médicaux très complexes, on pourrait utiliser 'gemini-1.5-pro'.
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=system_prompt, # Gemini gère le prompt système nativement ici
-        )
+        parts: list = [user_prompt]
 
-        # 3. Préparation du contenu de la requête (User Prompt)
-        contents = [user_prompt]
-
-        # 4. Traitement de l'image si elle est présente (VLM)
         if image_b64:
-            mime_type = "image/jpeg" # Valeur par défaut
-            
-            # Nettoyage si le front-end envoie le préfixe HTML (ex: "data:image/png;base64,iVBORw...")
+            mime_type = "image/jpeg"
             if image_b64.startswith("data:image"):
                 header, image_b64 = image_b64.split(",", 1)
                 mime_type = header.split(";")[0].split(":")[1]
-            
-            # Gemini attend un dictionnaire spécifique pour les données binaires
-            image_part = {
-                "mime_type": mime_type,
-                "data": image_b64
-            }
-            contents.append(image_part)
+            parts.append(genai_types.Part.from_bytes(
+                data=base64.b64decode(image_b64),
+                mime_type=mime_type,
+            ))
 
-        # 5. Appel asynchrone à l'API de Google
-        # On utilise une température basse (0.2) pour que les conseils médicaux soient déterministes et factuels
-        response = await model.generate_content_async(
-            contents,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.2, 
-            )
+        response = await _gemini_client.aio.models.generate_content(
+            model=_MODEL,
+            contents=parts,
+            config=genai_types.GenerateContentConfig(
+                system_instruction=system_prompt,
+                temperature=0.2,
+            ),
         )
-        
+
         return response.text
 
     except Exception as e:
         print(f"Erreur API Gemini : {str(e)}")
-        # En cas d'erreur, on renvoie une chaîne vide ou on lève une exception selon votre logique globale
         raise ValueError(f"Échec de la génération IA : {str(e)}")
 
 async def get_doctor_specialty(person: Person) -> str:
@@ -99,6 +79,30 @@ async def analyze_meal_image(image_b64: str, person: Person) -> ImageAnalysisRes
     except Exception:
         return ImageAnalysisResult(is_compatible=False, reasoning="Failed to analyze image.", alternative_suggestion=None)
 
+async def classify_intent(user_message: str, person: Person) -> dict:
+    """Use LLM to decide which tools to invoke based on what the user actually asked."""
+    from .prompts import INTENT_CLASSIFICATION_PROMPT
+    from datetime import date
+    age = (date.today() - person.dob.date()).days // 365 if person.dob else "?"
+    patient_summary = f"age={age}, sugar={person.sugarLevel}, bp={person.systolicBP}/{person.diastolicBP}, diseases={person.chronicDiseases}"
+    prompt = INTENT_CLASSIFICATION_PROMPT.format(
+        user_message=user_message,
+        patient_summary=patient_summary,
+    )
+    raw = await _call_llm(SYSTEM_MEDICAL_PERSONA, prompt)
+    try:
+        clean = raw.strip().strip("```json").strip("```").strip()
+        return json.loads(clean)
+    except Exception:
+        # Fallback: infer from keywords
+        msg = user_message.lower()
+        return {
+            "suggest_doctors": any(w in msg for w in ["médecin", "docteur", "spécialiste", "clinique", "doctor", "specialist"]),
+            "suggest_nutrition": any(w in msg for w in ["nutrition", "repas", "alimentation", "régime", "manger", "diet", "food", "meal"]),
+            "direct_response": "",
+        }
+
+
 async def query_google_places(api_key: str, location: Location, query: str) -> List[Place]:
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
@@ -113,10 +117,13 @@ async def query_google_places(api_key: str, location: Location, query: str) -> L
         
     places = []
     for p in data.get("results", [])[:6]:
+        geo = p.get("geometry", {}).get("location", {})
         places.append(Place(
             name=p.get("name"),
             address=p.get("vicinity") or p.get("formatted_address"),
             place_id=p.get("place_id"),
             open_now=(p.get("opening_hours", {}).get("open_now") if p.get("opening_hours") else None),
+            lat=geo.get("lat"),
+            lng=geo.get("lng"),
         ))
     return places

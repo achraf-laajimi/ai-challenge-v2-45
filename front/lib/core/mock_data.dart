@@ -3,7 +3,6 @@ import '../models/family.dart';
 
 /// Demo family for front-end only (no backend).
 Family get demoFamily {
-  final now = DateTime.now();
   return Family(
     father: Person(
       name: 'Ahmed',

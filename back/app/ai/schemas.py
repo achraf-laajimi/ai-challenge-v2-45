@@ -12,12 +12,15 @@ class AssistantRequest(BaseModel):
     include_nutrition: bool = True
     include_doctors: bool = True
     image_base64: Optional[str] = None # Pour l'analyse VLM de l'assiette
+    user_message: Optional[str] = None  # Le texte exact de l'utilisateur pour le routing intelligent
 
 class Place(BaseModel):
     name: str
     address: Optional[str] = None
     place_id: Optional[str] = None
     open_now: Optional[bool] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
 
 class NutritionSuggestion(BaseModel):
     title: str

@@ -66,10 +66,12 @@ class _AuthGateState extends State<AuthGate> {
   void initState() {
     super.initState();
     AuthService.instance.restoreSession().then((ok) {
-      if (mounted) setState(() {
-        _loading = false;
-        _authenticated = ok;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _authenticated = ok;
+        });
+      }
     });
   }
 

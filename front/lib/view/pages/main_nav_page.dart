@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants.dart';
+import '../../providers/app_provider.dart';
+import '../../service/family_service.dart';
 import 'dashboard/dashboard_page.dart';
 import 'ai_assistant/ai_assistant_page.dart';
 import 'health_map/health_map_page.dart';
@@ -15,6 +17,20 @@ class MainNavPage extends StatefulWidget {
 
 class _MainNavPageState extends State<MainNavPage> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFamily();
+  }
+
+  Future<void> _loadFamily() async {
+    final family = await FamilyService.instance.getMyFamily();
+    if (!mounted) return;
+    if (family != null) {
+      context.read<SelectedMemberProvider>().setFamily(family);
+    }
+  }
 
   static const _pages = [
     DashboardPage(),

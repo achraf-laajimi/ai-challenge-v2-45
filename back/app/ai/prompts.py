@@ -34,6 +34,26 @@ You MUST return a valid JSON object matching this schema:
 }}
 """
 
+INTENT_CLASSIFICATION_PROMPT = """
+You are a medical AI router. Given the user's message and patient profile, decide which tools to invoke.
+
+User message: "{user_message}"
+
+Patient summary: {patient_summary}
+
+Rules:
+- suggest_doctors: true if user asks to find a doctor, specialist, clinic, or if vitals show emergency
+- suggest_nutrition: true if user explicitly asks about food, diet, nutrition, meal plan, or eating habits
+- direct_response: a short direct text answer if the question is simple (e.g. describe health, explain a value). Empty string if tools will handle it.
+
+Return ONLY a valid JSON object:
+{{
+    "suggest_doctors": true/false,
+    "suggest_nutrition": true/false,
+    "direct_response": "string or empty string"
+}}
+"""
+
 VLM_MEAL_ANALYSIS_PROMPT = """
 You are a medical AI dietitian. Look at the provided image of a meal and analyze it against the patient's profile:
 {patient_data}

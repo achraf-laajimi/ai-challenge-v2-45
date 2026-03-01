@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 60 * 24 * 7  # 7 days
     # External APIs
     google_maps_api_key: str | None = None
+    gemini_api_key: str | None = None
 
     class Config:
         env_file = ".env"
