@@ -49,8 +49,7 @@ class _HealthMapPageState extends State<HealthMapPage> {
       final response = await AiService.instance.chat(
         lat: _myPosition.latitude,
         lng: _myPosition.longitude,
-        includeDoctors: true,
-        includeNutrition: false,
+        userMessage: 'Trouve un m\u00e9decin sp\u00e9cialiste proche.',
       );
 
       if (response != null) {

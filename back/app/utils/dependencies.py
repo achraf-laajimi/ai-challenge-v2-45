@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.database import get_database, get_users_collection
+from app.utils.database import get_database, get_users_collection
 from app.utils.security import decode_access_token
 
 security = HTTPBearer(auto_error=False)

@@ -16,34 +16,24 @@ class AiService {
     return prefs.getString('auth_family_id');
   }
 
-  /// Call the AI assistant endpoint.
-  /// [personId] optional — uses familyId if null.
-  /// [lat]/[lng] optional device location for Google Maps doctor search.
-  /// [includeDoctors] / [includeNutrition] control which tools are triggered.
-  /// [imageBase64] optional meal photo for VLM analysis.
   Future<AiAssistantResponse?> chat({
     String? personId,
     String? familyId,
     double? lat,
     double? lng,
-    bool includeDoctors = true,
-    bool includeNutrition = true,
     String? imageBase64,
     String? userMessage,
   }) async {
     final fid = familyId ?? await _getFamilyId();
 
-    final body = <String, dynamic>{
-      'include_doctors': includeDoctors,
-      'include_nutrition': includeNutrition,
-    };
+    final body = <String, dynamic>{};
 
     if (personId != null) {
       body['person_id'] = personId;
     } else if (fid != null) {
       body['family_id'] = fid;
     } else {
-      return null; // nothing to identify the user
+      return null; 
     }
 
     if (lat != null && lng != null) {

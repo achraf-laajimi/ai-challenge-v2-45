@@ -9,10 +9,8 @@ class AssistantRequest(BaseModel):
     person_id: Optional[str] = None
     family_id: Optional[str] = None
     location: Optional[Location] = None
-    include_nutrition: bool = True
-    include_doctors: bool = True
-    image_base64: Optional[str] = None # Pour l'analyse VLM de l'assiette
-    user_message: Optional[str] = None  # Le texte exact de l'utilisateur pour le routing intelligent
+    image_base64: Optional[str] = None
+    user_message: Optional[str] = None
 
 class Place(BaseModel):
     name: str

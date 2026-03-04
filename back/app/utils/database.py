@@ -1,7 +1,7 @@
 """MongoDB connection and collections."""
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
-from app.config import settings
+from app.utils.config import settings
 
 _client: AsyncIOMotorClient | None = None
 _db: AsyncIOMotorDatabase | None = None

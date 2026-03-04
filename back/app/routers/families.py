@@ -4,7 +4,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.database import get_database, get_families_collection, get_persons_collection
+from app.utils.database import get_database, get_families_collection, get_persons_collection
 from app.models.family import FamilyResponse, FamilyUpdate
 from app.models.person import Person, PersonRole
 from app.utils.dependencies import get_current_user_id, get_current_user_family_id

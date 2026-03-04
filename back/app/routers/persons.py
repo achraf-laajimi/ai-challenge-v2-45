@@ -4,7 +4,7 @@ from datetime import datetime
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.database import get_database, get_persons_collection
+from app.utils.database import get_database, get_persons_collection
 from app.models.person import Person, PersonCreate, PersonUpdate, PersonRole
 from app.utils.dependencies import get_current_user_family_id
 

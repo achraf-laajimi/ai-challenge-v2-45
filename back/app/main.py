@@ -4,9 +4,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.database import get_database, close_database
-from app.routers import auth, families, persons, ai
+from app.utils.config import settings
+from app.utils.database import get_database, close_database
+from app.routers import auth, families, persons
+from app import ai
 
 
 @asynccontextmanager

@@ -80,8 +80,6 @@ class _AiAssistantPageState extends State<AiAssistantPage>
 
   Future<void> _send({
     required String userText,
-    bool includeDoctors = false,
-    bool includeNutrition = false,
   }) async {
     if (_sending) return;
     final person = context.read<SelectedMemberProvider>().selectedPerson;
@@ -97,8 +95,6 @@ class _AiAssistantPageState extends State<AiAssistantPage>
       response = await AiService.instance
           .chat(
             personId: person?.id,
-            includeDoctors: includeDoctors,
-            includeNutrition: includeNutrition,
             imageBase64: _pendingImageBase64,
             userMessage: userText,
           )
@@ -182,7 +178,7 @@ class _AiAssistantPageState extends State<AiAssistantPage>
     _textController.clear();
     final text = t.isEmpty ? 'Analyse mon repas' : t;
     // Let the backend LLM decide which tools to use based on the message
-    _send(userText: text, includeDoctors: true, includeNutrition: true);
+    _send(userText: text);
   }
 
   @override
@@ -351,19 +347,19 @@ class _AiAssistantPageState extends State<AiAssistantPage>
             _QuickChip(
               icon: Icons.monitor_heart, label: 'Bilan sant\u00e9',
               color: const Color(0xFF00897B),
-              onTap: () => _send(userText: 'Faites un bilan sant\u00e9 complet.', includeDoctors: true, includeNutrition: true),
+              onTap: () => _send(userText: 'Faites un bilan sant\u00e9 complet.'),
             ),
             const SizedBox(width: 8),
             _QuickChip(
               icon: Icons.person_search, label: 'M\u00e9decin',
               color: const Color(0xFF0288D1),
-              onTap: () => _send(userText: 'Trouvez un m\u00e9decin sp\u00e9cialiste proche.', includeDoctors: true),
+              onTap: () => _send(userText: 'Trouvez un m\u00e9decin sp\u00e9cialiste proche.'),
             ),
             const SizedBox(width: 8),
             _QuickChip(
               icon: Icons.restaurant_menu, label: 'Nutrition',
               color: const Color(0xFFE53935),
-              onTap: () => _send(userText: 'Donnez-moi un plan nutritionnel personnalis\u00e9.', includeNutrition: true),
+              onTap: () => _send(userText: 'Donnez-moi un plan nutritionnel personnalis\u00e9.'),
             ),
             const SizedBox(width: 8),
             _QuickChip(
@@ -372,7 +368,7 @@ class _AiAssistantPageState extends State<AiAssistantPage>
               onTap: () async {
                 await _pickImage();
                 if (_pendingImageBase64 != null) {
-                  _send(userText: 'Analyse mon repas en photo.', includeNutrition: true);
+                  _send(userText: 'Analyse mon repas en photo.');
                 }
               },
             ),
