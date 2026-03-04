@@ -1,53 +1,37 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-env/
+# --- PYTHON (Back) ---
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
 venv/
+.venv/
+env/
 .env
 .env.*
 
-# VSCode
-.vscode/
+# --- FLUTTER / DART (Front) ---
+**/.dart_tool/
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.flutter-versions
+**/*.iml
 
-# Flutter/Dart
-.dart_tool/
-.packages
-.pub-cache/
-build/
-.flutter-plugins
-.flutter-plugins-dependencies
-.flutter-versions
+# --- ANDROID & IOS ---
+**/android/.gradle/
+**/android/local.properties
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/.last_build_id
+
+# --- IDE & SYSTEM ---
 .idea/
-*.iml
-
-# Android/iOS
-android/.gradle/
-android/app/debug/
-android/app/profile/
-android/app/release/
-android/local.properties
-ios/Flutter/App.framework
-ios/Flutter/Flutter.framework
-ios/Flutter/Flutter.podspec
-ios/Flutter/Generated.xcconfig
-ios/Flutter/ephemeral/
-ios/Pods/
-ios/Runner.xcworkspace/
-ios/build/
-
-# macOS/Linux/Windows
-macos/Flutter/ephemeral/
-macos/build/
-linux/build/
-windows/build/
-
-# Others
-.DS_Store
+.vscode/
+**/.DS_Store
 *.log
 *.swp
-*.swo
-
-# Node
 node_modules/
